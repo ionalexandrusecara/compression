@@ -4,14 +4,24 @@ import java.util.ArrayList;
 
 public class ArithmeticDecoder {
     public static void main(String[] args){
-        ArrayList<Element> elements = new ArrayList();
+        int n = 4, x;
         String test = "001011";
-        ArrayList<Double> probabilities = new ArrayList<Double>();
-        probabilities.add(0.5);
-        probabilities.add(0.25);
-        probabilities.add(0.25);
+        double decimalCode = convertBinaryFractiontoDecimal(Integer.parseInt(test), test.length());
+        String word = "";
 
-        double base = 0, top = 1;
+        ArrayList<Double> probabilities = new ArrayList<Double>();
+        ArrayList<String> letters = new ArrayList<String>();
+        probabilities.add(0.5);
+        probabilities.add(0.5);
+        probabilities.add(0.75);
+        probabilities.add(1.0);
+
+        letters.add("a");
+        letters.add("a");
+        letters.add("b");
+        letters.add("e");
+
+
 
         ArrayList<Interval> intervals = new ArrayList<Interval>();
         intervals.add(new Interval(0,0.5));
@@ -23,9 +33,37 @@ public class ArithmeticDecoder {
         binaryIntervals.add(new Interval(convertProbabilitytoBinary(0.75), convertProbabilitytoBinary(1)));
 
 
+        int j;
+
+        double base = 0, top = 1, baseCopy, topCopy, lInterval, hInterval;
+        j =0;
+
+        for(int i = 0; i<n;i++){
+            lInterval = base;
+            //hInterval = top;
+
+            x = 0;
+            while(lInterval<decimalCode && x < n){
+                lInterval = top * probabilities.get(x);
+                x++;
+            }
+
+            hInterval = lInterval;
+
+            word = word + letters.get(j);
+            base = lInterval;
+            top = hInterval;
+
+            j++;
+
+        }
+
+        System.out.println(word);
+
+
     }
 
-    public static double convertProbabilitytoBinary(double probability){
+    private static double convertProbabilitytoBinary(double probability){
         StringBuffer binary = new StringBuffer();
         binary.append("0.");
         while(probability!=1){
@@ -42,5 +80,15 @@ public class ArithmeticDecoder {
             }
         }
         return Double.parseDouble(binary.toString());
+    }
+
+    private static double convertBinaryFractiontoDecimal(int binaryCode, int length){
+        double x = 0;
+        while(binaryCode > 0){
+            x = x + (binaryCode%10)/Math.pow(2,length);
+            length --;
+            binaryCode = binaryCode/10;
+        }
+        return x;
     }
 }

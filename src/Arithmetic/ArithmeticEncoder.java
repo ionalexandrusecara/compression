@@ -11,31 +11,26 @@ public class ArithmeticEncoder {
         int[] charFreqs = new int[256];
 
         // read each character and record the frequencies
-        for (char c : test.toCharArray())
+        for (char c : test.toCharArray()){
             charFreqs[c]++;
-
-        int j = 0;
-        for (int i = 0; i < charFreqs.length; i++) {
-            if (charFreqs[i] > 0){
-                if(j==0) {
-                    elements.add(new Element((char) i, (double) charFreqs[i] / test.length()));
-                    j++;
-                } else {
-                    elements.add(new Element((char) i, (double) charFreqs[i] / test.length() + elements.get(j-1).getProbability()));
-                    j++;
-                }
-            }
         }
 
-        double base = 0, top = elements.get(0).getProbability()/2, baseCopy, topCopy;
-        elements.get(0).setInterval(base, top);
+        for (int i = 0; i < test.length(); i++) {
+            elements.add(new Element(test.charAt(i), (double) charFreqs[test.charAt(i)] / test.length()));
+        }
 
-        for(int i = 1; i<elements.size();i++){
+        double base = 0, top = 1, baseCopy, topCopy;
+
+        for(int i = 0; i<elements.size();i++){
             baseCopy = base;
             topCopy = top;
+            if(i>1){
+                base = baseCopy + (topCopy-baseCopy) * elements.get(i-1).getProbability();
+            } else {
+                base = 0;
+            }
 
-            base = baseCopy + (topCopy-baseCopy) * elements.get(i-1).getProbability();
-            top = baseCopy + (topCopy-baseCopy) * elements.get(i).getProbability();
+            top = base + (topCopy-baseCopy) * elements.get(i).getProbability();
 
             elements.get(i).setInterval(base, top);
         }
@@ -50,7 +45,7 @@ public class ArithmeticEncoder {
         System.out.println(code);
     }
 
-    public static double convertProbabilitytoBinary(double probability){
+    private static double convertProbabilitytoBinary(double probability){
         StringBuffer binary = new StringBuffer();
         binary.append("0.");
         while(probability!=1){
