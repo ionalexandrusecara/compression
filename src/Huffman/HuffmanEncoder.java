@@ -3,7 +3,6 @@ package Huffman;
 import java.util.PriorityQueue;
 
 public class HuffmanEncoder {
-
     public static void main(String[] args){
         //String test = "aaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbccccccccccddddddddeeeeeeee";
         String test = "aaaabcdeef";
@@ -16,76 +15,88 @@ public class HuffmanEncoder {
             charFreqs[c]++;
 
         // build tree
-        Tree tree = buildTree(charFreqs);
+        HuffmanNode top = buildTree(charFreqs);
+        System.out.println(top.toString());
 
         System.out.println("SYMBOL\tWEIGHT\tHUFFMAN CODE");
-        printCodes(tree, new StringBuffer());
+        printCodes(top, new StringBuffer());
+        System.out.println("________________");
     }
 
-    public static Tree buildTree(int[] charFreqs) {
-        PriorityQueue<Tree> trees = new PriorityQueue<Tree>();
-        // initially, we have a forest of leaves
-        // one for each non-empty character
+    //Build Tree
+    public static HuffmanNode buildTree(int[] charFreqs) {
+        PriorityQueue<HuffmanNode> trees = new PriorityQueue<HuffmanNode>();
+
         for (int i = 0; i < charFreqs.length; i++) {
-            //System.out.println(charFreqs[i]);
-            if (charFreqs[i] > 0)
-                trees.offer(new Leaf(charFreqs[i], (char) i));
+            if (charFreqs[i] > 0) {
+                trees.offer(new HuffmanNode(charFreqs[i], (char) i, null, null));
+            }
         }
 
         assert trees.size() > 0;
+
         // loop until there is only one tree left
         /*System.out.println("---");
         Iterator it = trees.iterator();
         System.out.println("Priority queue values are: ");
         while(it.hasNext()){
-            Leaf acopy = (Leaf)it.next();
-            System.out.println("Value: " + acopy.value + " " + acopy.frequency);
+            HuffmanNode acopy = (HuffmanNode) it.next();
+            System.out.println("Value: " + acopy.data + " " + acopy.frequency);
         }*/
-        //int i =1;
+
+        int i =1;
+
         while (trees.size() > 1) {
 
             // two trees with least frequency
-            Tree a = trees.poll();
-            Tree b = trees.poll();
+            HuffmanNode a = trees.poll();
+            HuffmanNode b = trees.poll();
 
-            //System.out.println(i + " : " + a.frequency + " : " + b.frequency);
-            //i++;
+            System.out.println(i + " : " + a.frequency + " : " + a.data);
+            System.out.println(i + " : " + b.frequency + " : " + b.data);
+            i++;
 
             // put into new node and re-insert into queue
-            trees.offer(new Node(a, b));
+            if(a.data < b.data){
+                trees.offer(new HuffmanNode(a.frequency + b.frequency, a.data, a, b));
+                //System.out.println(i + " : " + a.frequency + " : " + b.frequency + " : " + a.data);
+            } else {
+                trees.offer(new HuffmanNode(a.frequency + b.frequency, b.data, a, b));
+                //System.out.println(i + " : " + a.frequency + " : " + b.frequency + " : " + b.data);
+            }
         }
         return trees.poll();
     }
 
-    public static void printCodes(Tree tree, StringBuffer prefix) {
-        assert tree != null;
-        if (tree instanceof Leaf) {
+
+    public static void printCodes(HuffmanNode top, StringBuffer prefix) {
+        assert top != null;
+        //System.out.println(top.toString());
+        //System.out.println(top.left);
+        if (top.left == null && top.right==null) {
             //System.out.println("Leaf");
-            Leaf leaf = (Leaf)tree;
+            //Leaf leaf = (Leaf)top;
 
             // print out character, frequency, and code for this leaf (which is just the prefix)
-            System.out.println(leaf.value + "\t" + leaf.frequency + "\t" + prefix);
+            System.out.println(top.data + "\t" + top.frequency + "\t" + prefix);
 
-        } else if (tree instanceof Node) {
+        } else {
             //System.out.println("Not Leaf");
-            Node node = (Node)tree;
+            //Node node = (Node)top;
             /*System.out.println("1: " + node.left.frequency);
             System.out.println("2: " + node.right.frequency);*/
 
             // traverse left
             //System.out.println("Left");
-            prefix.append('0');
-            printCodes(node.left, prefix);
+            prefix.append('1');
+            printCodes(top.left, prefix);
             prefix.deleteCharAt(prefix.length()-1);
 
             // traverse right
             //System.out.println("Right");
-            prefix.append('1');
-            printCodes(node.right, prefix);
+            prefix.append('0');
+            printCodes(top.right, prefix);
             prefix.deleteCharAt(prefix.length()-1);
         }
     }
-
-
-
 }

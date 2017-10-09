@@ -1,55 +1,73 @@
 package Huffman;
 
+import java.util.PriorityQueue;
+
 public class HuffmanDecoder {
 
-    public static void main(String[] args){
-        //String test = "aaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbccccccccccddddddddeeeeeeee";
-        String test = "0100";
+    public static void main(String args[]){
+        String S = "000000000100111001011111";
 
+        String test = "aaaabcdeef";
+
+        // we will assume that all our characters will have
+        // code less than 256, for simplicity
         int[] charFreqs = new int[256];
         // read each character and record the frequencies
         for (char c : test.toCharArray())
             charFreqs[c]++;
 
-        decode(test, (Node) HuffmanEncoder.buildTree(charFreqs));
+        HuffmanNode root = buildTree(charFreqs);
+
+        //System.out.println(root.toString());
+
+        StringBuilder output = new StringBuilder();
+        HuffmanNode base = root;
+        //System.out.println(base.toString());
+        while (!S.isEmpty()){
+            if (S.charAt(0) == '0'){
+                base = base.right;
+                S = S.substring(1);
+            }
+            else {
+                base = base.left;
+                S = S.substring(1);
+            }
+            if (base.left == null && base.right == null){
+                output.append(base.data);
+                base = root;
+            }
+
+        }
+        System.out.println(output.toString());
     }
 
-    /*public static void decode(String S, Node root)
-    {
-        StringBuilder sb = new StringBuilder();
-        Node c = root;
-        for (int i = 0; i < S.length(); i++) {
-            System.out.println(i);
-            c = (Node) (S.charAt(i) == '1' ? c.right : c.left);
-            if (c.left == null && c.right == null) {
-                sb.append(c.value);
-                c = root;
-            }
-        }
-        System.out.print(sb);
-    }*/
 
-    public static void decode(String S , Node root)
-    {
-        if (root == null) return;
-        StringBuilder sb = new StringBuilder();
-        int pos = 0;
-        Node current = root;
-        char[] chars = S.toCharArray();
-        while (pos < chars.length) {
-            char c = chars[pos];
-            if (c == '0' && current.left != null) {
-                current = (Node)current.left;
-            }
-            else if (c == '1' && current.right != null) {
-                current = (Node)current.right;
-            }
-            if (current.left == null && current.right == null) {
-                sb.append(current.value);
-                current = root;
-            }
-            pos++;
+    public static HuffmanNode buildTree(int[] charFreqs) {
+        PriorityQueue<HuffmanNode> trees = new PriorityQueue<HuffmanNode>();
+
+        for (int i = 0; i < charFreqs.length; i++) {
+            if (charFreqs[i] > 0)
+                trees.offer(new HuffmanNode(charFreqs[i], (char) i, null, null));
         }
-        System.out.print(sb.toString());
+
+        assert trees.size() > 0;
+
+        while (trees.size() > 1) {
+
+            // two trees with least frequency
+            HuffmanNode a = trees.poll();
+            HuffmanNode b = trees.poll();
+
+
+            // put into new node and re-insert into queue
+            if(a.data < b.data){
+                trees.offer(new HuffmanNode(a.frequency + b.frequency, a.data, a, b));
+            } else {
+                trees.offer(new HuffmanNode(a.frequency + b.frequency, b.data, a, b));
+            }
+
+        }
+        HuffmanNode test = trees.poll();
+        return test;
     }
 }
