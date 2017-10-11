@@ -4,10 +4,7 @@ import java.util.PriorityQueue;
 
 public class HuffmanDecoder {
 
-    public static void main(String args[]){
-        String S = "000000000100111001011111";
-
-        String test = "aaaabcdeef";
+    public static String huffmanDecode(String S, String test){
 
         // we will assume that all our characters will have
         // code less than 256, for simplicity
@@ -38,7 +35,7 @@ public class HuffmanDecoder {
             }
 
         }
-        System.out.println(output.toString());
+        return output.toString();
     }
 
 

@@ -4,19 +4,19 @@ import java.util.ArrayList;
 
 public class ArithmeticEncoder {
 
-    public static void main(String[] args){
+    public static String arithmeticEncode(String text){
         ArrayList<Element> elements = new ArrayList();
-        String test = "aabe";
+
         String code;
         int[] charFreqs = new int[256];
 
-        // read each character and record the frequencies
-        for (char c : test.toCharArray()){
+
+        for (char c : text.toCharArray()){
             charFreqs[c]++;
         }
 
-        for (int i = 0; i < test.length(); i++) {
-            elements.add(new Element(test.charAt(i), (double) charFreqs[test.charAt(i)] / test.length()));
+        for (int i = 0; i < text.length(); i++) {
+            elements.add(new Element(text.charAt(i), (double) charFreqs[text.charAt(i)] / text.length()));
         }
 
         double base = 0, top = 1, baseCopy, topCopy;
@@ -43,6 +43,7 @@ public class ArithmeticEncoder {
         code = elements.get(elements.size()-1).getLowBinary() + "";
         code = code.substring(2);
         System.out.println(code);
+        return code;
     }
 
     private static double convertProbabilitytoBinary(double probability){

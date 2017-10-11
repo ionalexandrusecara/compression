@@ -1,26 +1,28 @@
 package Huffman;
 
+import java.util.ArrayList;
 import java.util.PriorityQueue;
 
 public class HuffmanEncoder {
-    public static void main(String[] args){
-        //String test = "aaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbccccccccccddddddddeeeeeeee";
-        String test = "aaaabcdeef";
 
-        // we will assume that all our characters will have
-        // code less than 256, for simplicity
+    public static ArrayList<HuffmanNode> codes = new ArrayList<HuffmanNode>();
+
+    public static String huffmanEncode(String message){
         int[] charFreqs = new int[256];
-        // read each character and record the frequencies
-        for (char c : test.toCharArray())
+
+        for (char c : message.toCharArray())
             charFreqs[c]++;
 
-        // build tree
         HuffmanNode top = buildTree(charFreqs);
-        System.out.println(top.toString());
+        //System.out.println(top.toString());
 
-        System.out.println("SYMBOL\tWEIGHT\tHUFFMAN CODE");
         printCodes(top, new StringBuffer());
-        System.out.println("________________");
+
+        /*for(int i = 0; i < codes.size(); i++){
+            System.out.println(codes.get(i).data + " : " + codes.get(i).code);
+        }*/
+
+        return encode(message);
     }
 
     //Build Tree
@@ -35,34 +37,14 @@ public class HuffmanEncoder {
 
         assert trees.size() > 0;
 
-        // loop until there is only one tree left
-        /*System.out.println("---");
-        Iterator it = trees.iterator();
-        System.out.println("Priority queue values are: ");
-        while(it.hasNext()){
-            HuffmanNode acopy = (HuffmanNode) it.next();
-            System.out.println("Value: " + acopy.data + " " + acopy.frequency);
-        }*/
-
-        int i =1;
-
         while (trees.size() > 1) {
-
-            // two trees with least frequency
             HuffmanNode a = trees.poll();
             HuffmanNode b = trees.poll();
 
-            System.out.println(i + " : " + a.frequency + " : " + a.data);
-            System.out.println(i + " : " + b.frequency + " : " + b.data);
-            i++;
-
-            // put into new node and re-insert into queue
             if(a.data < b.data){
                 trees.offer(new HuffmanNode(a.frequency + b.frequency, a.data, a, b));
-                //System.out.println(i + " : " + a.frequency + " : " + b.frequency + " : " + a.data);
             } else {
                 trees.offer(new HuffmanNode(a.frequency + b.frequency, b.data, a, b));
-                //System.out.println(i + " : " + a.frequency + " : " + b.frequency + " : " + b.data);
             }
         }
         return trees.poll();
@@ -71,21 +53,12 @@ public class HuffmanEncoder {
 
     public static void printCodes(HuffmanNode top, StringBuffer prefix) {
         assert top != null;
-        //System.out.println(top.toString());
-        //System.out.println(top.left);
+
         if (top.left == null && top.right==null) {
-            //System.out.println("Leaf");
-            //Leaf leaf = (Leaf)top;
-
-            // print out character, frequency, and code for this leaf (which is just the prefix)
-            System.out.println(top.data + "\t" + top.frequency + "\t" + prefix);
-
+            //System.out.println(top.data + "\t" + top.frequency + "\t" + prefix);
+            codes.add(new HuffmanNode(top.frequency, top.data, null, null));
+            codes.get(codes.size()-1).code = prefix.toString();
         } else {
-            //System.out.println("Not Leaf");
-            //Node node = (Node)top;
-            /*System.out.println("1: " + node.left.frequency);
-            System.out.println("2: " + node.right.frequency);*/
-
             // traverse left
             //System.out.println("Left");
             prefix.append('1');
@@ -99,4 +72,18 @@ public class HuffmanEncoder {
             prefix.deleteCharAt(prefix.length()-1);
         }
     }
+
+    public static String encode(String text){
+        StringBuffer encodedText = new StringBuffer();
+        for(int i = 0; i < text.length(); i++){
+            for(int j = 0; j < codes.size(); j++){
+                if(text.charAt(i) == codes.get(j).data){
+                    encodedText.append(codes.get(j).code);
+                }
+            }
+        }
+        return encodedText.toString();
+    }
+
+
 }
