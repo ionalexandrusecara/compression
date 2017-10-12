@@ -9,7 +9,9 @@ public class HuffmanEncoder {
 
     public static String huffmanEncode(String message){
         int[] charFreqs = new int[256];
+        codes = new ArrayList<HuffmanNode>();
 
+        //count frequencies of each source symbol
         for (char c : message.toCharArray())
             charFreqs[c]++;
 
@@ -28,7 +30,6 @@ public class HuffmanEncoder {
     //Build Tree
     public static HuffmanNode buildTree(int[] charFreqs) {
         PriorityQueue<HuffmanNode> trees = new PriorityQueue<HuffmanNode>();
-
         for (int i = 0; i < charFreqs.length; i++) {
             if (charFreqs[i] > 0) {
                 trees.offer(new HuffmanNode(charFreqs[i], (char) i, null, null));
@@ -55,18 +56,15 @@ public class HuffmanEncoder {
         assert top != null;
 
         if (top.left == null && top.right==null) {
-            //System.out.println(top.data + "\t" + top.frequency + "\t" + prefix);
             codes.add(new HuffmanNode(top.frequency, top.data, null, null));
             codes.get(codes.size()-1).code = prefix.toString();
         } else {
-            // traverse left
-            //System.out.println("Left");
+            // move left
             prefix.append('1');
             printCodes(top.left, prefix);
             prefix.deleteCharAt(prefix.length()-1);
 
-            // traverse right
-            //System.out.println("Right");
+            // move right
             prefix.append('0');
             printCodes(top.right, prefix);
             prefix.deleteCharAt(prefix.length()-1);

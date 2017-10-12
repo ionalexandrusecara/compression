@@ -6,6 +6,7 @@ public class ArithmeticDecoder {
     public static String arithmeticDecode(String test, ArrayList<Integer> frequencies, ArrayList<String> chars){
         int n = chars.size(), x;
         //String test = "001011";
+        System.out.println("test: " + test);
         double decimalCode = convertBinaryFractiontoDecimal(Long.parseLong(test), test.length());
         String word = "";
 
