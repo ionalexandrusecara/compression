@@ -16,13 +16,12 @@ public class HuffmanEncoder {
             charFreqs[c]++;
 
         HuffmanNode top = buildTree(charFreqs);
-        //System.out.println(top.toString());
 
         printCodes(top, new StringBuffer());
 
-        /*for(int i = 0; i < codes.size(); i++){
-            System.out.println(codes.get(i).data + " : " + codes.get(i).code);
-        }*/
+        if(codes.size() == 1){
+            codes.get(codes.size()-1).code = "0";
+        }
 
         return encode(message);
     }

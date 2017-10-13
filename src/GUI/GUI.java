@@ -94,11 +94,7 @@ public class GUI {
         initialize();
     }
 
-    public int countNumberOfSourceLetters(){
-        int number = 0;
-        System.out.println(this.textField2.getText());
-        return number;
-    }
+
 
     /**
      * Initialize the contents of the frame.
@@ -311,33 +307,31 @@ public class GUI {
                 } else if(!checkFrequenciesAsIntegers()){
                     System.out.println("Frequencies have to be integers!");
                 } else {
-                    System.out.println("Success!");
-
                     String text = generateText();
                     long startTime, endTime, huffmanEncodingTime, arithmeticEncodingTime, huffmanDecodingTime, arithmeticDecodingTime;
 
                     //Huffman Encoding
-                    startTime = System.currentTimeMillis();
+                    startTime = System.nanoTime();
                     String huffmanCode = HuffmanEncoder.huffmanEncode(text);
-                    endTime = System.currentTimeMillis();
+                    endTime = System.nanoTime();
                     huffmanEncodingTime = endTime - startTime;
 
                     //Arithmetic Encoding
-                    startTime = System.currentTimeMillis();
+                    startTime = System.nanoTime();
                     String arithmeticCode = ArithmeticEncoder.arithmeticEncode(text);
-                    endTime = System.currentTimeMillis();
+                    endTime = System.nanoTime();
                     arithmeticEncodingTime = endTime - startTime;
 
                     //HuffmanDecoding
-                    startTime = System.currentTimeMillis();
+                    startTime = System.nanoTime();
                     String huffmanText = HuffmanDecoder.huffmanDecode(huffmanCode, text);
-                    endTime = System.currentTimeMillis();
+                    endTime = System.nanoTime();
                     huffmanDecodingTime = endTime - startTime;
 
                     //ArithmeticDecoding
-                    startTime = System.currentTimeMillis();
+                    startTime = System.nanoTime();
                     String arithmeticText = ArithmeticDecoder.arithmeticDecode(arithmeticCode, getFrequencies(), getChars());
-                    endTime = System.currentTimeMillis();
+                    endTime = System.nanoTime();
                     arithmeticDecodingTime = endTime - startTime;
 
                     generatedTextLabel.setText(text);
@@ -370,10 +364,10 @@ public class GUI {
                     ArithmeticSize.setText(arithmeticCode.length() + "");
 
                     //HuffmanCompressionRatio
-                    HuffmanCompressionRatio.setText(((double)(huffmanCode.length() / sizeInBits)) + "");
+                    HuffmanCompressionRatio.setText(((huffmanCode.length()*100.0 / sizeInBits)) + "");
 
                     //ArithmeticCompressionRatio
-                    ArithmeticCompressionRatio.setText(((double)(arithmeticCode.length() / sizeInBits)) + "");
+                    ArithmeticCompressionRatio.setText(((arithmeticCode.length()*100.0 / sizeInBits)) + "");
                 }
             }
 
@@ -444,7 +438,6 @@ public class GUI {
             public String generateText() {
                 StringBuffer text = new StringBuffer();
                 ArrayList<String> chars = new ArrayList<>();
-                System.out.println("Source Finish");
                 for (int i = 0; i < sources.size(); i++) {
                     if(sources.get(i).getText() != null && !sources.get(i).getText().isEmpty()) {
                         for (int j = 0; j < Integer.parseInt(frequencies.get(i).getText()); j++) {
@@ -459,7 +452,6 @@ public class GUI {
                     chars.remove(random);
                 }
                 text.append(chars.get(0));
-                System.out.println(text.toString());
                 return text.toString();
             }
         });

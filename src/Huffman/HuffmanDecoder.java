@@ -9,17 +9,30 @@ public class HuffmanDecoder {
         // we will assume that all our characters will have
         // code less than 256, for simplicity
         int[] charFreqs = new int[256];
+
+        StringBuilder output = new StringBuilder();
         // read each character and record the frequencies
         for (char c : test.toCharArray())
             charFreqs[c]++;
 
+        int count = 0;
+        for(int i = 0; i<charFreqs.length; i++){
+            if(charFreqs[i]>0){
+                count ++;
+            }
+        }
+
         HuffmanNode root = buildTree(charFreqs);
 
-        //System.out.println(root.toString());
+        if(count == 1){
+            for(int i = 0; i< test.length(); i++){
+                output.append(root.data);
+            }
+            return output.toString();
+        }
 
-        StringBuilder output = new StringBuilder();
         HuffmanNode base = root;
-        //System.out.println(base.toString());
+
         while (!S.isEmpty()){
             if (S.charAt(0) == '0'){
                 base = base.right;

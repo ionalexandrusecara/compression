@@ -1,48 +1,70 @@
 package Arithmetic;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class ArithmeticEncoder {
 
+    static double tag;
+
     public static String arithmeticEncode(String text){
         ArrayList<Element> elements = new ArrayList();
-
-        String code;
-        int[] charFreqs = new int[256];
+        int[] charFrequencies = new int[256];
+        String code = "";
 
 
         for (char c : text.toCharArray()){
-            charFreqs[c]++;
+            charFrequencies[c]++;
         }
-
-        for (int i = 0; i < text.length(); i++) {
-            elements.add(new Element(text.charAt(i), (double) charFreqs[text.charAt(i)] / text.length()));
-        }
-
-        double base = 0, top = 1, baseCopy, topCopy;
-
-        for(int i = 0; i<elements.size();i++){
-            baseCopy = base;
-            topCopy = top;
-            if(i>1){
-                base = baseCopy + (topCopy-baseCopy) * elements.get(i-1).getProbability();
-            } else {
-                base = 0;
+        for (int i = 0; i < charFrequencies.length; i++) {
+            if(charFrequencies[i]>0){
+                elements.add(new Element((char) i, (double) charFrequencies[i] / text.length()));
             }
-
-            top = base + (topCopy-baseCopy) * elements.get(i).getProbability();
-
-            elements.get(i).setInterval(base, top);
         }
 
-        for(Element element: elements){
-            element.setLowBinary(convertProbabilitytoBinary(element.getLow()));
-            element.setHighBinary(convertProbabilitytoBinary(element.getHigh()));
+
+
+        elements.get(0).setLow(0);
+        elements.get(0).setHigh(elements.get(0).getProbability());
+        for (int i = 1; i < elements.size(); i++) {
+            elements.get(i).setHigh(elements.get(i-1).getHigh() + elements.get(i).getProbability());
+            elements.get(i).setLow(elements.get(i - 1).getHigh());
         }
 
-        code = elements.get(elements.size()-1).getLowBinary() + "";
-        code = code.substring(2);
-        System.out.println(code);
+
+        double base = 0, top = 1, baseCopy, range, p1, p2;
+
+
+        for(int i = 0; i<text.length(); i++){
+            p1 = findCharLow(text.charAt(i), elements);
+            p2 = findCharHigh(text.charAt(i), elements);
+
+            baseCopy = base;
+
+            range = top - base;
+
+            base = range * p1 + baseCopy;
+            top = range * p2 + baseCopy;
+        }
+
+        tag = base;
+
+        double binaryBase = convertProbabilitytoBinary(base);
+
+        DecimalFormat df = new DecimalFormat("#");
+        df.setMaximumFractionDigits(16);
+
+
+        if(elements.size() == 1){
+            for(int i = 0; i<text.length(); i++){
+                code = code + "0";
+            }
+        } else {
+            code = df.format(binaryBase) + "";
+            code = code.substring(1);
+        }
+
+
         return code;
     }
 
@@ -63,6 +85,24 @@ public class ArithmeticEncoder {
             }
         }
         return Double.parseDouble(binary.toString());
+    }
+
+    public static double findCharLow(char c, ArrayList<Element> elements){
+        for (int i = 0; i<elements.size(); i++){
+            if(c==elements.get(i).getValue()){
+                return elements.get(i).getLow();
+            }
+        }
+        return 0;
+    }
+
+    public static double findCharHigh(char c, ArrayList<Element> elements){
+        for (int i = 0; i<elements.size(); i++){
+            if(c==elements.get(i).getValue()){
+                return elements.get(i).getHigh();
+            }
+        }
+        return 0;
     }
 
 
